@@ -3,37 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Space-Clicker 2026</title>
+    <title>Neon Space-Clicker 2026</title>
     <style>
+        :root {
+            --primary-neon: #00f2ff;
+            --secondary-neon: #7000ff;
+            --bg-dark: #0a0b10;
+            --card-bg: #161b22;
+        }
+
         body {
-            background-color: #1a1a1a;
+            background-color: var(--bg-dark);
             color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             height: 100vh;
             margin: 0;
             overflow: hidden;
+            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
         }
 
-        .stats {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            font-weight: bold;
+        /* Top Header Stats */
+        .header {
+            text-align: center;
+            margin-top: 40px;
+            z-index: 2;
         }
 
-        #cps-display {
-            margin-bottom: 30px;
+        .score-container {
+            font-size: 3.5rem;
+            font-weight: 900;
+            text-shadow: 0 0 20px var(--primary-neon);
+            margin-bottom: 5px;
+            letter-spacing: -2px;
+        }
+
+        .cps-label {
+            font-size: 1.1rem;
+            color: var(--primary-neon);
+            text-transform: uppercase;
+            letter-spacing: 2px;
             opacity: 0.8;
         }
 
-        /* Updated Button Style: Longer like a Spacebar */
+        /* Upgrade Area - Middle */
+        .upgrade-container {
+            margin-top: 40px;
+            display: flex;
+            gap: 20px;
+            z-index: 2;
+        }
+
+        .upgrade-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            width: 160px;
+            border: 1px solid #30363d;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .upgrade-card:hover {
+            border-color: var(--secondary-neon);
+            transform: translateY(-5px);
+        }
+
+        .upgrade-name {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .upgrade-bonus {
+            font-size: 0.8rem;
+            color: #8b949e;
+            margin-bottom: 15px;
+        }
+
+        button.buy-btn {
+            background: var(--secondary-neon);
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+
+        button.buy-btn:disabled {
+            background: #21262d;
+            color: #484f58;
+            cursor: not-allowed;
+        }
+
+        /* The Main Action Area - Bottom */
+        .action-area {
+            position: absolute;
+            bottom: 60px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
         #click-btn {
             cursor: pointer;
             user-select: none;
-            transition: transform 0.1s;
+            position: relative;
         }
 
         #click-btn::before {
@@ -41,88 +122,63 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 280px; /* Made much wider */
-            height: 60px;  /* Slightly shorter height */
-            background: #ffffff;
-            color: #000000;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            box-shadow: 0 8px 0 #b1b1b1;
+            width: 400px; /* Wide Spacebar */
+            height: 70px;
+            background: #f0f0f0;
+            color: #1a1a1a;
+            border-radius: 15px;
+            font-weight: 900;
+            font-size: 1.4rem;
+            letter-spacing: 8px;
+            box-shadow: 0 10px 0 #888, 0 15px 20px rgba(0,0,0,0.4);
             transition: all 0.05s;
         }
 
-        /* The active/pressed state */
         #click-btn.pressed::before {
-            box-shadow: none;
+            box-shadow: 0 2px 0 #888;
             transform: translateY(8px);
+            background: #ddd;
         }
 
-        .upgrade-container {
-            margin-top: 50px;
-            display: flex;
-            gap: 20px;
-        }
-
-        .upgrade-card {
-            background: #333;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            width: 150px;
-            border: 1px solid #444;
-        }
-
-        button.buy-btn {
-            background: #4CAF50;
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 10px;
-            width: 100%;
-        }
-
-        button.buy-btn:disabled {
-            background: #555;
-            cursor: not-allowed;
-        }
-
-        @keyframes floatUp {
-            to { transform: translateY(-100px); opacity: 0; }
-        }
-
+        /* Particle Visuals */
         .particle {
             position: absolute;
             pointer-events: none;
-            animation: floatUp 1s ease-out forwards;
-            font-weight: bold;
-            color: #4CAF50;
-            font-size: 1.5rem;
+            animation: floatUp 0.8s ease-out forwards;
+            font-weight: 900;
+            color: var(--primary-neon);
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px var(--primary-neon);
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-120px) scale(1.5); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-    <div class="stats">Score: <span id="score">0</span></div>
-    <div id="cps-display">Per Second: 0</div>
-
-    <!-- The Game Button -->
-    <div id="click-btn"></div>
+    <div class="header">
+        <div class="score-container" id="score">0</div>
+        <div class="cps-label" id="cps-display">0 Per Second</div>
+    </div>
 
     <div class="upgrade-container">
         <div class="upgrade-card">
-            <div>Auto-Clicker</div>
-            <small>+1/sec</small>
-            <button class="buy-btn" id="buy-auto">Cost: 10</button>
+            <div class="upgrade-name">Auto-Drone</div>
+            <div class="upgrade-bonus">+1/sec</div>
+            <button class="buy-btn" id="buy-auto">COST: 10</button>
         </div>
         <div class="upgrade-card">
-            <div>Mega Tap</div>
-            <small>+5 per click</small>
-            <button class="buy-btn" id="buy-tap">Cost: 50</button>
+            <div class="upgrade-name">Mega Drive</div>
+            <div class="upgrade-bonus">+5/click</div>
+            <button class="buy-btn" id="buy-tap">COST: 50</button>
         </div>
+    </div>
+
+    <div class="action-area">
+        <div id="click-btn"></div>
     </div>
 
     <script>
@@ -138,54 +194,47 @@
         const tapBtn = document.getElementById('buy-tap');
         const cpsEl = document.getElementById('cps-display');
 
-        // Click Logic
-        btn.addEventListener('mousedown', () => {
-            btn.classList.add('pressed');
-            addScore(clickValue);
-            createParticle();
-        });
-
-        window.addEventListener('mouseup', () => {
-            btn.classList.remove('pressed');
-        });
-
-        // Changed from 'e' to ' ' (Spacebar)
-        window.addEventListener('keydown', (e) => {
-            if (e.key === ' ' || e.code === 'Space') {
-                e.preventDefault(); // Prevents the page from jumping down
-                if (!btn.classList.contains('pressed')) {
-                    btn.classList.add('pressed');
-                    addScore(clickValue);
-                    createParticle();
-                }
-            }
-        });
-
-        window.addEventListener('keyup', (e) => {
-            if (e.key === ' ' || e.code === 'Space') {
-                btn.classList.remove('pressed');
-            }
-        });
+        function updateDisplay() {
+            scoreEl.innerText = Math.floor(score).toLocaleString();
+            cpsEl.innerText = `${autoValue} Per Second`;
+            autoBtn.disabled = score < autoCost;
+            tapBtn.disabled = score < tapCost;
+            autoBtn.innerText = `COST: ${autoCost}`;
+            tapBtn.innerText = `COST: ${tapCost}`;
+        }
 
         function addScore(amount) {
             score += amount;
             updateDisplay();
         }
 
-        function updateDisplay() {
-            scoreEl.innerText = Math.floor(score);
-            cpsEl.innerText = `Per Second: ${autoValue}`;
-            autoBtn.disabled = score < autoCost;
-            tapBtn.disabled = score < tapCost;
-        }
+        // Logic for Clicks
+        const handleInteraction = () => {
+            btn.classList.add('pressed');
+            addScore(clickValue);
+            createParticle();
+        };
+
+        btn.addEventListener('mousedown', handleInteraction);
+        window.addEventListener('mouseup', () => btn.classList.remove('pressed'));
+
+        // Spacebar Logic
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (!btn.classList.contains('pressed')) handleInteraction();
+            }
+        });
+        window.addEventListener('keyup', (e) => {
+            if (e.code === 'Space') btn.classList.remove('pressed');
+        });
 
         // Upgrades
         autoBtn.onclick = () => {
             if (score >= autoCost) {
                 score -= autoCost;
                 autoValue++;
-                autoCost = Math.floor(autoCost * 1.5);
-                autoBtn.innerText = `Cost: ${autoCost}`;
+                autoCost = Math.floor(autoCost * 1.6);
                 updateDisplay();
             }
         };
@@ -194,29 +243,28 @@
             if (score >= tapCost) {
                 score -= tapCost;
                 clickValue += 5;
-                tapCost = Math.floor(tapCost * 2);
-                tapBtn.innerText = `Cost: ${tapCost}`;
+                tapCost = Math.floor(tapCost * 2.2);
                 updateDisplay();
             }
         };
 
-        // Game Loop (Auto-clickers)
+        // Game Loop
         setInterval(() => {
-            if (autoValue > 0) {
-                addScore(autoValue / 10);
-            }
+            if (autoValue > 0) addScore(autoValue / 10);
         }, 100);
 
-        // Visual Particle Effect
         function createParticle() {
             const p = document.createElement('div');
             p.innerText = `+${clickValue}`;
             p.className = 'particle';
-            p.style.left = (window.innerWidth / 2) + (Math.random() * 60 - 30) + 'px';
-            p.style.top = (window.innerHeight / 2) - 40 + 'px';
+            // Center particle on the long button
+            p.style.left = (window.innerWidth / 2) + (Math.random() * 100 - 50) + 'px';
+            p.style.bottom = '140px';
             document.body.appendChild(p);
-            setTimeout(() => p.remove(), 1000);
+            setTimeout(() => p.remove(), 800);
         }
+
+        updateDisplay();
     </script>
 </body>
 </html>
