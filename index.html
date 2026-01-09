@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Clicker 2026</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .stats {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        /* Your Custom Button Style */
+        #click-btn {
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s;
+        }
+
+        #click-btn::before {
+            content: 'E';
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px; /* Increased size for the main game button */
+            height: 80px;
+            background: #ffffff;
+            color: #000000;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 2rem;
+            box-shadow: 0 8px 0 #b1b1b1;
+            transition: all 0.05s;
+        }
+
+        /* The active/pressed state */
+        #click-btn.pressed::before {
+            box-shadow: none;
+            transform: translateY(8px);
+        }
+
+        .upgrade-container {
+            margin-top: 50px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .upgrade-card {
+            background: #333;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            width: 150px;
+            border: 1px solid #444;
+        }
+
+        button.buy-btn {
+            background: #4CAF50;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button.buy-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+
+        @keyframes floatUp {
+            to { transform: translateY(-100px); opacity: 0; }
+        }
+
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            animation: floatUp 1s ease-out forwards;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stats">Score: <span id="score">0</span></div>
+    <div id="cps-display">Per Second: 0</div>
+
+    <!-- The Game Button -->
+    <div id="click-btn"></div>
+
+    <div class="upgrade-container">
+        <div class="upgrade-card">
+            <div>Auto-Clicker</div>
+            <small>+1/sec</small>
+            <button class="buy-btn" id="buy-auto">Cost: 10</button>
+        </div>
+        <div class="upgrade-card">
+            <div>Mega Tap</div>
+            <small>+5 per click</small>
+            <button class="buy-btn" id="buy-tap">Cost: 50</button>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let clickValue = 1;
+        let autoValue = 0;
+        let autoCost = 10;
+        let tapCost = 50;
+
+        const scoreEl = document.getElementById('score');
+        const btn = document.getElementById('click-btn');
+        const autoBtn = document.getElementById('buy-auto');
+        const tapBtn = document.getElementById('buy-tap');
+        const cpsEl = document.getElementById('cps-display');
+
+        // Click Logic
+        btn.addEventListener('mousedown', () => {
+            btn.classList.add('pressed');
+            addScore(clickValue);
+            createParticle();
+        });
+
+        window.addEventListener('mouseup', () => {
+            btn.classList.remove('pressed');
+        });
+
+        // Also support keyboard "E" key
+        window.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'e' && !btn.classList.contains('pressed')) {
+                btn.classList.add('pressed');
+                addScore(clickValue);
+                createParticle();
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.key.toLowerCase() === 'e') btn.classList.remove('pressed');
+        });
+
+        function addScore(amount) {
+            score += amount;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            scoreEl.innerText = Math.floor(score);
+            cpsEl.innerText = `Per Second: ${autoValue}`;
+            autoBtn.disabled = score < autoCost;
+            tapBtn.disabled = score < tapCost;
+        }
+
+        // Upgrades
+        autoBtn.onclick = () => {
+            if (score >= autoCost) {
+                score -= autoCost;
+                autoValue++;
+                autoCost = Math.floor(autoCost * 1.5);
+                autoBtn.innerText = `Cost: ${autoCost}`;
+                updateDisplay();
+            }
+        };
+
+        tapBtn.onclick = () => {
+            if (score >= tapCost) {
+                score -= tapCost;
+                clickValue += 5;
+                tapCost = Math.floor(tapCost * 2);
+                tapBtn.innerText = `Cost: ${tapCost}`;
+                updateDisplay();
+            }
+        };
+
+        // Game Loop (Auto-clickers)
+        setInterval(() => {
+            if (autoValue > 0) {
+                addScore(autoValue / 10);
+            }
+        }, 100);
+
+        // Visual Particle Effect
+        function createParticle() {
+            const p = document.createElement('div');
+            p.innerText = `+${clickValue}`;
+            p.className = 'particle';
+            p.style.left = (window.innerWidth / 2) + (Math.random() * 40 - 20) + 'px';
+            p.style.top = (window.innerHeight / 2) - 50 + 'px';
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 1000);
+        }
+    </script>
+</body>
+</html>
