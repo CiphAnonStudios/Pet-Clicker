@@ -3,268 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Space-Clicker 2026</title>
+    <title>Cyber-Space Clicker 2026</title>
+    <link href="fonts.googleapis.com" rel="stylesheet">
     <style>
         :root {
-            --primary-neon: #00f2ff;
-            --secondary-neon: #7000ff;
-            --bg-dark: #0a0b10;
-            --card-bg: #161b22;
+            --neon-blue: #00d2ff;
+            --neon-purple: #9d00ff;
+            --btn-glow: rgba(0, 210, 255, 0.6);
+            --bg-dark: #050608;
         }
 
         body {
             background-color: var(--bg-dark);
-            color: white;
-            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+            background: radial-gradient(circle at center, #0d121d 0%, #050608 100%);
         }
 
-        /* Top Header Stats */
+        /* Stats Header */
         .header {
+            margin-top: 50px;
             text-align: center;
-            margin-top: 40px;
-            z-index: 2;
+            z-index: 10;
         }
 
-        .score-container {
-            font-size: 3.5rem;
+        .score-display {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4.5rem;
             font-weight: 900;
-            text-shadow: 0 0 20px var(--primary-neon);
-            margin-bottom: 5px;
-            letter-spacing: -2px;
+            background: linear-gradient(to bottom, #fff, var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px var(--btn-glow));
+            margin-bottom: -10px;
         }
 
-        .cps-label {
-            font-size: 1.1rem;
-            color: var(--primary-neon);
+        .cps-info {
+            font-size: 1.2rem;
+            color: var(--neon-blue);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            opacity: 0.8;
+            letter-spacing: 4px;
+            opacity: 0.7;
         }
 
-        /* Upgrade Area - Middle */
-        .upgrade-container {
-            margin-top: 40px;
+        /* Upgrade Cards */
+        .upgrades {
             display: flex;
-            gap: 20px;
-            z-index: 2;
+            gap: 25px;
+            margin-top: 40px;
         }
 
-        .upgrade-card {
-            background: var(--card-bg);
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 20px;
-            border-radius: 16px;
+            border-radius: 12px;
+            width: 170px;
             text-align: center;
-            width: 160px;
-            border: 1px solid #30363d;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
         }
 
-        .upgrade-card:hover {
-            border-color: var(--secondary-neon);
+        .card:hover:not(.disabled) {
+            border-color: var(--neon-purple);
             transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(157, 0, 255, 0.2);
         }
 
-        .upgrade-name {
-            font-weight: bold;
-            font-size: 1rem;
-            margin-bottom: 5px;
-        }
+        .card-title { font-weight: 700; font-size: 1.1rem; color: #aaa; }
+        .card-bonus { color: var(--neon-blue); font-size: 0.9rem; margin-bottom: 15px; }
 
-        .upgrade-bonus {
-            font-size: 0.8rem;
-            color: #8b949e;
-            margin-bottom: 15px;
-        }
-
-        button.buy-btn {
-            background: var(--secondary-neon);
+        .buy-btn {
+            background: linear-gradient(45deg, var(--neon-purple), #6a00ff);
             border: none;
             color: white;
             padding: 10px;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             width: 100%;
-            font-weight: bold;
-            transition: opacity 0.2s;
+            font-weight: 700;
+            font-family: 'Orbitron';
+            font-size: 0.8rem;
         }
 
-        button.buy-btn:disabled {
-            background: #21262d;
-            color: #484f58;
+        .buy-btn:disabled {
+            background: #222;
+            color: #555;
             cursor: not-allowed;
         }
 
-        /* The Main Action Area - Bottom */
-        .action-area {
+        /* The Main Clicker - Lowered & Styled */
+        .action-container {
             position: absolute;
-            bottom: 60px;
+            bottom: 80px;
             width: 100%;
             display: flex;
             justify-content: center;
         }
 
         #click-btn {
-            cursor: pointer;
-            user-select: none;
-            position: relative;
-        }
-
-        #click-btn::before {
-            content: 'SPACE';
-            display: inline-flex;
+            width: 450px;
+            height: 80px;
+            background: #111;
+            border-radius: 15px;
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 20px var(--btn-glow), inset 0 0 10px var(--btn-glow);
+            display: flex;
             align-items: center;
             justify-content: center;
-            width: 400px; /* Wide Spacebar */
-            height: 70px;
-            background: #f0f0f0;
-            color: #1a1a1a;
-            border-radius: 15px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: pulse 2s infinite;
+        }
+
+        #click-btn::after {
+            content: 'SPACEBAR SYSTEM';
+            font-family: 'Orbitron';
             font-weight: 900;
-            font-size: 1.4rem;
-            letter-spacing: 8px;
-            box-shadow: 0 10px 0 #888, 0 15px 20px rgba(0,0,0,0.4);
-            transition: all 0.05s;
+            font-size: 1.2rem;
+            letter-spacing: 10px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
         }
 
-        #click-btn.pressed::before {
-            box-shadow: 0 2px 0 #888;
-            transform: translateY(8px);
-            background: #ddd;
+        #click-btn:active, #click-btn.pressed {
+            transform: scale(0.95) translateY(5px);
+            box-shadow: 0 0 40px var(--neon-blue), inset 0 0 20px var(--neon-blue);
+            background: #1a1a1a;
         }
 
-        /* Particle Visuals */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 15px var(--btn-glow); }
+            50% { box-shadow: 0 0 30px var(--btn-glow); }
+            100% { box-shadow: 0 0 15px var(--btn-glow); }
+        }
+
+        /* Particles */
         .particle {
             position: absolute;
             pointer-events: none;
-            animation: floatUp 0.8s ease-out forwards;
+            font-family: 'Orbitron';
             font-weight: 900;
-            color: var(--primary-neon);
-            font-size: 1.8rem;
-            text-shadow: 0 0 10px var(--primary-neon);
+            color: #fff;
+            animation: float 0.8s ease-out forwards;
+            text-shadow: 0 0 10px var(--neon-blue);
         }
 
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-120px) scale(1.5); opacity: 0; }
+        @keyframes float {
+            to { transform: translateY(-150px); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="score-container" id="score">0</div>
-        <div class="cps-label" id="cps-display">0 Per Second</div>
+        <div class="score-display" id="score">0</div>
+        <div class="cps-info" id="cps">0 PER SECOND</div>
     </div>
 
-    <div class="upgrade-container">
-        <div class="upgrade-card">
-            <div class="upgrade-name">Auto-Drone</div>
-            <div class="upgrade-bonus">+1/sec</div>
-            <button class="buy-btn" id="buy-auto">COST: 10</button>
+    <div class="upgrades">
+        <div class="card" id="card-auto">
+            <div class="card-title">AUTO-LINK</div>
+            <div class="card-bonus">+1/SEC</div>
+            <button class="buy-btn" id="buy-auto">10 CR</button>
         </div>
-        <div class="upgrade-card">
-            <div class="upgrade-name">Mega Drive</div>
-            <div class="upgrade-bonus">+5/click</div>
-            <button class="buy-btn" id="buy-tap">COST: 50</button>
+        <div class="card" id="card-tap">
+            <div class="card-title">OVERDRIVE</div>
+            <div class="card-bonus">+5/TAP</div>
+            <button class="buy-btn" id="buy-tap">50 CR</button>
         </div>
     </div>
 
-    <div class="action-area">
+    <div class="action-container">
         <div id="click-btn"></div>
     </div>
 
     <script>
-        let score = 0;
-        let clickValue = 1;
-        let autoValue = 0;
-        let autoCost = 10;
-        let tapCost = 50;
+        let score = 0, clickVal = 1, autoVal = 0;
+        let autoCost = 10, tapCost = 50;
 
         const scoreEl = document.getElementById('score');
+        const cpsEl = document.getElementById('cps');
         const btn = document.getElementById('click-btn');
         const autoBtn = document.getElementById('buy-auto');
         const tapBtn = document.getElementById('buy-tap');
-        const cpsEl = document.getElementById('cps-display');
 
-        function updateDisplay() {
+        function update() {
             scoreEl.innerText = Math.floor(score).toLocaleString();
-            cpsEl.innerText = `${autoValue} Per Second`;
+            cpsEl.innerText = `${autoVal} PER SECOND`;
+            autoBtn.innerText = `${autoCost} CR`;
+            tapBtn.innerText = `${tapCost} CR`;
             autoBtn.disabled = score < autoCost;
             tapBtn.disabled = score < tapCost;
-            autoBtn.innerText = `COST: ${autoCost}`;
-            tapBtn.innerText = `COST: ${tapCost}`;
         }
 
-        function addScore(amount) {
-            score += amount;
-            updateDisplay();
-        }
-
-        // Logic for Clicks
-        const handleInteraction = () => {
+        function trigger() {
+            score += clickVal;
             btn.classList.add('pressed');
-            addScore(clickValue);
+            setTimeout(() => btn.classList.remove('pressed'), 100);
             createParticle();
-        };
+            update();
+        }
 
-        btn.addEventListener('mousedown', handleInteraction);
-        window.addEventListener('mouseup', () => btn.classList.remove('pressed'));
+        btn.onmousedown = trigger;
+        window.onkeydown = (e) => { if(e.code === 'Space') { e.preventDefault(); trigger(); } };
 
-        // Spacebar Logic
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                e.preventDefault();
-                if (!btn.classList.contains('pressed')) handleInteraction();
-            }
-        });
-        window.addEventListener('keyup', (e) => {
-            if (e.code === 'Space') btn.classList.remove('pressed');
-        });
-
-        // Upgrades
         autoBtn.onclick = () => {
-            if (score >= autoCost) {
+            if(score >= autoCost) {
                 score -= autoCost;
-                autoValue++;
-                autoCost = Math.floor(autoCost * 1.6);
-                updateDisplay();
+                autoVal++;
+                autoCost = Math.floor(autoCost * 1.5);
+                update();
             }
         };
 
         tapBtn.onclick = () => {
-            if (score >= tapCost) {
+            if(score >= tapCost) {
                 score -= tapCost;
-                clickValue += 5;
-                tapCost = Math.floor(tapCost * 2.2);
-                updateDisplay();
+                clickVal += 5;
+                tapCost = Math.floor(tapCost * 2.1);
+                update();
             }
         };
 
-        // Game Loop
-        setInterval(() => {
-            if (autoValue > 0) addScore(autoValue / 10);
-        }, 100);
+        setInterval(() => { if(autoVal > 0) { score += autoVal/10; update(); } }, 100);
 
         function createParticle() {
             const p = document.createElement('div');
-            p.innerText = `+${clickValue}`;
             p.className = 'particle';
-            // Center particle on the long button
-            p.style.left = (window.innerWidth / 2) + (Math.random() * 100 - 50) + 'px';
-            p.style.bottom = '140px';
+            p.innerText = `+${clickVal}`;
+            p.style.left = (window.innerWidth/2 + (Math.random()*100 - 50)) + 'px';
+            p.style.bottom = '160px';
             document.body.appendChild(p);
             setTimeout(() => p.remove(), 800);
         }
-
-        updateDisplay();
+        update();
     </script>
 </body>
 </html>
