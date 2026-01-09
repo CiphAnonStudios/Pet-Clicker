@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Clicker 2026</title>
+    <title>Space-Clicker 2026</title>
     <style>
         body {
             background-color: #1a1a1a;
@@ -24,7 +24,12 @@
             font-weight: bold;
         }
 
-        /* Your Custom Button Style */
+        #cps-display {
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        /* Updated Button Style: Longer like a Spacebar */
         #click-btn {
             cursor: pointer;
             user-select: none;
@@ -32,17 +37,18 @@
         }
 
         #click-btn::before {
-            content: 'E';
+            content: 'SPACE';
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 80px; /* Increased size for the main game button */
-            height: 80px;
+            width: 280px; /* Made much wider */
+            height: 60px;  /* Slightly shorter height */
             background: #ffffff;
             color: #000000;
             border-radius: 12px;
             font-weight: 800;
-            font-size: 2rem;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
             box-shadow: 0 8px 0 #b1b1b1;
             transition: all 0.05s;
         }
@@ -76,6 +82,7 @@
             border-radius: 4px;
             cursor: pointer;
             margin-top: 10px;
+            width: 100%;
         }
 
         button.buy-btn:disabled {
@@ -93,6 +100,7 @@
             animation: floatUp 1s ease-out forwards;
             font-weight: bold;
             color: #4CAF50;
+            font-size: 1.5rem;
         }
     </style>
 </head>
@@ -141,17 +149,22 @@
             btn.classList.remove('pressed');
         });
 
-        // Also support keyboard "E" key
+        // Changed from 'e' to ' ' (Spacebar)
         window.addEventListener('keydown', (e) => {
-            if (e.key.toLowerCase() === 'e' && !btn.classList.contains('pressed')) {
-                btn.classList.add('pressed');
-                addScore(clickValue);
-                createParticle();
+            if (e.key === ' ' || e.code === 'Space') {
+                e.preventDefault(); // Prevents the page from jumping down
+                if (!btn.classList.contains('pressed')) {
+                    btn.classList.add('pressed');
+                    addScore(clickValue);
+                    createParticle();
+                }
             }
         });
 
         window.addEventListener('keyup', (e) => {
-            if (e.key.toLowerCase() === 'e') btn.classList.remove('pressed');
+            if (e.key === ' ' || e.code === 'Space') {
+                btn.classList.remove('pressed');
+            }
         });
 
         function addScore(amount) {
@@ -199,8 +212,8 @@
             const p = document.createElement('div');
             p.innerText = `+${clickValue}`;
             p.className = 'particle';
-            p.style.left = (window.innerWidth / 2) + (Math.random() * 40 - 20) + 'px';
-            p.style.top = (window.innerHeight / 2) - 50 + 'px';
+            p.style.left = (window.innerWidth / 2) + (Math.random() * 60 - 30) + 'px';
+            p.style.top = (window.innerHeight / 2) - 40 + 'px';
             document.body.appendChild(p);
             setTimeout(() => p.remove(), 1000);
         }
