@@ -5,7 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Space-Clicker 2026</title>
     <style>
-        /* Keeping other styles here to keep the body tag clean */
+        :root {
+            /* 2026 Color Palette */
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --checkered-color: rgba(255, 255, 255, 0.05);
+        }
+
         body {
             color: white;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -16,82 +22,114 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
+            background-color: #0f172a; /* Dark space base */
+        }
+
+        /* Moving Checkered Background Layer */
+        .checkered-bg {
+            position: fixed;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background-image: 
+                linear-gradient(45deg, var(--checkered-color) 25%, transparent 25%), 
+                linear-gradient(-45deg, var(--checkered-color) 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, var(--checkered-color) 75%), 
+                linear-gradient(-45deg, transparent 75%, var(--checkered-color) 75%);
+            background-size: 80px 80px;
+            background-position: 0 0, 0 40px, 40px -40px, -40px 0px;
+            animation: moveBG 30s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes moveBG {
+            from { transform: translate(0, 0); }
+            to { transform: translate(80px, 80px); }
         }
 
         .stats {
-            font-size: 2rem;
-            margin-bottom: 20px;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
             font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.7); /* Added for readability */
+            z-index: 1;
         }
 
         #cps-display {
             margin-bottom: 30px;
             opacity: 0.8;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+            z-index: 1;
         }
 
+        /* Glassmorphism Main Button */
         #click-btn {
             cursor: pointer;
             user-select: none;
             transition: transform 0.1s;
-        }
-
-        #click-btn::before {
-            content: 'SPACE';
-            display: inline-flex;
+            z-index: 1;
+            position: relative;
+            width: 300px;
+            height: 80px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            width: 280px;
-            height: 60px;
-            background: #ffffff;
-            color: #000000;
-            border-radius: 12px;
             font-weight: 800;
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            box-shadow: 0 8px 0 #b1b1b1;
-            transition: all 0.05s;
+            font-size: 1.5rem;
+            letter-spacing: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        #click-btn.pressed::before {
-            box-shadow: none;
-            transform: translateY(8px);
+        #click-btn::after {
+            content: 'SPACE';
         }
 
+        #click-btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Glassmorphism Upgrade Cards */
         .upgrade-container {
             margin-top: 50px;
             display: flex;
             gap: 20px;
+            z-index: 1;
         }
 
         .upgrade-card {
-            background: rgba(51, 51, 51, 0.9); /* Slight transparency for background visibility */
-            padding: 15px;
-            border-radius: 8px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 20px;
+            border-radius: 15px;
             text-align: center;
-            width: 150px;
-            border: 1px solid #444;
+            width: 160px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         button.buy-btn {
             background: #4CAF50;
             border: none;
             color: white;
-            padding: 8px 16px;
-            border-radius: 4px;
+            padding: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 15px;
             width: 100%;
+            font-weight: bold;
+            transition: opacity 0.2s;
         }
 
         button.buy-btn:disabled {
-            background: #555;
+            background: #444;
+            opacity: 0.5;
             cursor: not-allowed;
-        }
-
-        @keyframes floatUp {
-            to { transform: translateY(-100px); opacity: 0; }
         }
 
         .particle {
@@ -101,11 +139,18 @@
             font-weight: bold;
             color: #4CAF50;
             font-size: 1.5rem;
+            z-index: 2;
+        }
+
+        @keyframes floatUp {
+            to { transform: translateY(-120px) scale(1.2); opacity: 0; }
         }
     </style>
 </head>
-<!-- UPDATED BODY TAG BELOW -->
-<body style="background-image: url('./assets/background.png'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
+<body>
+
+    <!-- This div provides the moving checkered effect -->
+    <div class="checkered-bg"></div>
 
     <div class="stats">Score: <span id="score">0</span></div>
     <div id="cps-display">Per Second: 0</div>
@@ -138,30 +183,25 @@
         const tapBtn = document.getElementById('buy-tap');
         const cpsEl = document.getElementById('cps-display');
 
+        // Main Click Logic
         btn.addEventListener('mousedown', () => {
-            btn.classList.add('pressed');
             addScore(clickValue);
             createParticle();
-        });
-
-        window.addEventListener('mouseup', () => {
-            btn.classList.remove('pressed');
         });
 
         window.addEventListener('keydown', (e) => {
             if (e.key === ' ' || e.code === 'Space') {
                 e.preventDefault();
-                if (!btn.classList.contains('pressed')) {
-                    btn.classList.add('pressed');
-                    addScore(clickValue);
-                    createParticle();
-                }
+                // Check if button is already focused or being held
+                addScore(clickValue);
+                createParticle();
+                btn.style.transform = "scale(0.95)";
             }
         });
 
         window.addEventListener('keyup', (e) => {
             if (e.key === ' ' || e.code === 'Space') {
-                btn.classList.remove('pressed');
+                btn.style.transform = "scale(1)";
             }
         });
 
@@ -207,8 +247,9 @@
             const p = document.createElement('div');
             p.innerText = `+${clickValue}`;
             p.className = 'particle';
-            p.style.left = (window.innerWidth / 2) + (Math.random() * 60 - 30) + 'px';
-            p.style.top = (window.innerHeight / 2) - 40 + 'px';
+            // Position particle at mouse or center of button
+            p.style.left = (window.innerWidth / 2) + (Math.random() * 100 - 50) + 'px';
+            p.style.top = (window.innerHeight / 2) - 50 + 'px';
             document.body.appendChild(p);
             setTimeout(() => p.remove(), 1000);
         }
