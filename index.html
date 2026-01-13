@@ -130,7 +130,25 @@
     from { transform: translate(0, 0); }
     to { transform: translate(100px, 100px); }
 }
-     
+
+        .overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.35);
+  opacity: 0; pointer-events: none; transition: opacity 200ms;
+}
+.overlay.visible { opacity: 1; pointer-events: auto; }
+
+.panel {
+  position: fixed; top: 0; right: -320px;
+  width: 320px; height: 100%;
+  background: #fff; box-shadow: -8px 0 24px rgba(0,0,0,0.12);
+  transition: right 220ms; padding: 16px; display:flex; flex-direction:column;
+}
+.panel.open { right: 0; }
+
+.btn { padding: 8px 12px; border-radius:6px; cursor:pointer; }
+.btn-primary { background:#0077cc; color:#fff; border:0; }
+
       
     </style>
 </head>
@@ -156,6 +174,24 @@
     </div>
 
     <div class="glass-overlay"></div>
+
+    <!-- trigger -->
+<button id="openBtn" class="btn btn-primary">Open Panel</button>
+
+<!-- overlay -->
+<div id="overlay" class="overlay" aria-hidden="true"></div>
+
+<!-- panel -->
+<aside id="panel" class="panel" role="dialog" aria-hidden="true" aria-label="Side panel">
+  <div class="panel-header">
+    <strong>Panel</strong>
+    <button id="closeBtn" class="btn">Close</button>
+  </div>
+  <div class="panel-body">
+    <!-- panel content -->
+  </div>
+</aside>
+
 
 
     <script>
@@ -267,6 +303,40 @@
             document.body.appendChild(p);
             setTimeout(() => p.remove(), 1000);
         }
+
+        const openBtn = document.getElementById('openBtn');
+const closeBtn = document.getElementById('closeBtn');
+const panel = document.getElementById('panel');
+const overlay = document.getElementById('overlay');
+
+function openPanel() {
+  panel.classList.add('open');
+  overlay.classList.add('visible');
+  panel.setAttribute('aria-hidden','false');
+  overlay.setAttribute('aria-hidden','false');
+  closeBtn.focus();
+  openBtn.disabled = true;
+  document.addEventListener('keydown', onKeyDown);
+}
+
+function closePanel() {
+  panel.classList.remove('open');
+  overlay.classList.remove('visible');
+  panel.setAttribute('aria-hidden','true');
+  overlay.setAttribute('aria-hidden','true');
+  openBtn.disabled = false;
+  openBtn.focus();
+  document.removeEventListener('keydown', onKeyDown);
+}
+
+function onKeyDown(e) {
+  if (e.key === 'Escape') closePanel();
+}
+
+openBtn.addEventListener('click', openPanel);
+closeBtn.addEventListener('click', closePanel);
+overlay.addEventListener('click', closePanel);
+
     </script>
 </body>
 </html>
