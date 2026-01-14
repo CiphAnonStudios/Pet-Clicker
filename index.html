@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Space-Clicker 2026</title>
-
     <style>
-        /* ===================== */
-        /* BASIC PAGE STYLES */
-        /* ===================== */
+        /* Keeping other styles here to keep the body tag clean */
         body {
             color: white;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -19,21 +16,14 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            background-image: url('./assets/background.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
         }
 
-        /* ===================== */
-        /* STATS DISPLAY */
-        /* ===================== */
+       
         .stats {
             font-size: 2rem;
             margin-bottom: 20px;
             font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7); /* Added for readability */
         }
 
         #cps-display {
@@ -42,12 +32,10 @@
             text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
         }
 
-        /* ===================== */
-        /* MAIN SPACE BUTTON */
-        /* ===================== */
         #click-btn {
             cursor: pointer;
             user-select: none;
+            transition: transform 0.1s;
         }
 
         #click-btn::before {
@@ -57,14 +45,17 @@
             justify-content: center;
             width: 500px;
             height: 60px;
-            background: white;
-            color: black;
+            background: #ffffff;
+            color: #000000;
             border-radius: 12px;
             font-weight: 800;
             font-size: 1.2rem;
             letter-spacing: 2px;
             box-shadow: 0 8px 0 #b1b1b1;
             transition: all 0.05s;
+            position: absolute;
+            bottom: 45px;
+            left: 470px;
         }
 
         #click-btn.pressed::before {
@@ -72,42 +63,6 @@
             transform: translateY(8px);
         }
 
-        /* ===================== */
-        /* SETTINGS BUTTON (SAME STYLE) */
-        /* ===================== */
-        #settings-btn {
-            cursor: pointer;
-            user-select: none;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-        }
-
-        #settings-btn::before {
-            content: 'SETTINGS';
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 180px;
-            height: 45px;
-            background: white;
-            color: black;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 1rem;
-            letter-spacing: 2px;
-            box-shadow: 0 8px 0 #b1b1b1;
-            transition: all 0.05s;
-        }
-
-        #settings-btn.pressed::before {
-            box-shadow: none;
-            transform: translateY(8px);
-        }
-
-        /* ===================== */
-        /* UPGRADES */
-        /* ===================== */
         .upgrade-container {
             margin-top: 50px;
             display: flex;
@@ -115,7 +70,7 @@
         }
 
         .upgrade-card {
-            background: rgba(51, 51, 51, 0.9);
+            background: rgba(51, 51, 51, 0.9); /* Slight transparency for background visibility */
             padding: 15px;
             border-radius: 8px;
             text-align: center;
@@ -139,9 +94,6 @@
             cursor: not-allowed;
         }
 
-        /* ===================== */
-        /* FLOATING PARTICLES */
-        /* ===================== */
         @keyframes floatUp {
             to { transform: translateY(-100px); opacity: 0; }
         }
@@ -155,123 +107,212 @@
             font-size: 1.5rem;
         }
 
-        /* ===================== */
-        /* SETTINGS PANEL */
-        /* ===================== */
-        #settingsPanel {
+/* The moving checkered pattern overlay */
+.glass-overlay {
+    position: fixed;
+    top: -100px;
+    left: -100px;
+    width: calc(100% + 200px);
+    height: calc(100% + 200px);
+    background-image:
+        linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.05) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.05) 75%);
+    background-size: 100px 100px;
+    background-position: 0 0, 0 50px, 50px -50px, -50px 0px;
+    animation: movePattern 20s linear infinite;
+    z-index: -1; /* Keeps it behind your text/buttons but over the body bg */
+    pointer-events: none;
+}
+
+@keyframes movePattern {
+    from { transform: translate(0, 0); }
+    to { transform: translate(100px, 100px); }
+}
+
+        #settingsButton {
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) scale(0);
+            transform: translate(-50%, -50%;) scale(0);
             background: white;
-            color: black;
+            border: 2px solid #333;
             padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            transition: transform 0.3s ease;
-            z-index: 10;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px egba(0,0,0,0.3);
+            transition:transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: dlex-end;
+            gap: 10px;
         }
 
         #closeButton {
+            display: none;
+            padding: 5px 10px;
             cursor: pointer;
-            font-weight: bold;
-            float: right;
         }
+   
     </style>
 </head>
+<!-- UPDATED BODY TAG BELOW -->
+<body style="background-image: url('./assets/background.png'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
 
-<body>
-
-    <!-- UI -->
     <div class="stats">Score: <span id="score">0</span></div>
     <div id="cps-display">Per Second: 0</div>
 
     <div id="click-btn"></div>
-    <div id="settings-btn"></div>
 
-    <!-- Upgrades -->
     <div class="upgrade-container">
         <div class="upgrade-card">
             <div>Auto-Clicker</div>
             <small>+1/sec</small>
-            <button class="buy-btn" id="buy-auto">Cost: 10</button>
+            <button class="buy-btn" id="buy-auto">Cost: 10</button> <!-- class="buy-btn" -->
         </div>
         <div class="upgrade-card">
             <div>Mega Tap</div>
             <small>+5 per click</small>
-            <button class="buy-btn" id="buy-tap">Cost: 50</button>
+            <button class="buy-btn" id="buy-tap">Cost: 50</button> <!-- class="buy-btn" -->
         </div>
     </div>
 
-    <!-- Settings Panel -->
+    <div class="glass-overlay"></div>
+   
+<button id="settingsButton">Settings</button>
+
     <div id="settingsPanel">
-        <span id="closeButton">X</span>
-        <h3>Settings</h3>
-        <p>More options coming soon.</p>
+        <button id="closeButton">X</button>
     </div>
 
+
     <script>
-        /* ===================== */
-        /* GAME VARIABLES */
-        /* ===================== */
-        let score = Number(localStorage.getItem('score')) || 0;
-        let clickValue = 1;
-        let autoValue = 0;
+        // --- ADDED: Load saved data or use defaults ---
+        let score = parseFloat(localStorage.getItem('space_score')) || 0;
+        let clickValue = parseInt(localStorage.getItem('space_clickValue')) || 1;
+        let autoValue = parseInt(localStorage.getItem('space_autoValue')) || 0;
+        let autoCost = parseInt(localStorage.getItem('space_autoCost')) || 10;
+        let tapCost = parseInt(localStorage.getItem('space_tapCost')) || 50;
 
         const scoreEl = document.getElementById('score');
         const btn = document.getElementById('click-btn');
+        const autoBtn = document.getElementById('buy-auto');
+        const tapBtn = document.getElementById('buy-tap');
         const cpsEl = document.getElementById('cps-display');
 
-        /* ===================== */
-        /* CLICK LOGIC */
-        /* ===================== */
+        // --- ADDED: Save data function ---
+        function saveGame() {
+            localStorage.setItem('space_score', score);
+            localStorage.setItem('space_clickValue', clickValue);
+            localStorage.setItem('space_autoValue', autoValue);
+            localStorage.setItem('space_autoCost', autoCost);
+            localStorage.setItem('space_tapCost', tapCost);
+        }
+
+        // --- ADDED: Set button text based on loaded data ---
+        autoBtn.innerText = `Cost: ${autoCost}`;
+        tapBtn.innerText = `Cost: ${tapCost}`;
+        updateDisplay(); // Run once at start to sync UI
+
         btn.addEventListener('mousedown', () => {
             btn.classList.add('pressed');
             addScore(clickValue);
-            spawnParticle();
+            createParticle();
+            saveGame(); // --- ADDED: Save on click ---
         });
 
         window.addEventListener('mouseup', () => {
             btn.classList.remove('pressed');
         });
 
+        window.addEventListener('keydown', (e) => {
+            if (e.key === ' ' || e.code === 'Space') {
+                e.preventDefault();
+                if (!btn.classList.contains('pressed')) {
+                    btn.classList.add('pressed');
+                    addScore(clickValue);
+                    createParticle();
+                    saveGame(); // --- ADDED: Save on keypress ---
+                }
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.key === ' ' || e.code === 'Space') {
+                btn.classList.remove('pressed');
+            }
+        });
+
         function addScore(amount) {
             score += amount;
-            scoreEl.textContent = Math.floor(score);
-            localStorage.setItem('score', score);
+            updateDisplay();
         }
 
-        /* ===================== */
-        /* PARTICLES */
-        /* ===================== */
-        function spawnParticle() {
+        function updateDisplay() {
+            scoreEl.innerText = Math.floor(score);
+            cpsEl.innerText = `Per Second: ${autoValue}`;
+            autoBtn.disabled = score < autoCost;
+            tapBtn.disabled = score < tapCost;
+        }
+
+        autoBtn.onclick = () => {
+            if (score >= autoCost) {
+                score -= autoCost;
+                autoValue++;
+                autoCost = Math.floor(autoCost * 1.5);
+                autoBtn.innerText = `Cost: ${autoCost}`;
+                updateDisplay();
+                saveGame(); // --- ADDED: Save on upgrade ---
+            }
+        };
+
+        tapBtn.onclick = () => {
+            if (score >= tapCost) {
+                score -= tapCost;
+                clickValue += 5;
+                tapCost = Math.floor(tapCost * 2);
+                tapBtn.innerText = `Cost: ${tapCost}`;
+                updateDisplay();
+                saveGame(); // --- ADDED: Save on upgrade ---
+            }
+        };
+
+        setInterval(() => {
+            if (autoValue > 0) {
+                addScore(autoValue / 10);
+            }
+        }, 100);
+
+        // --- ADDED: Background auto-save every 30 seconds ---
+        setInterval(saveGame, 30000);
+
+        function createParticle() {
             const p = document.createElement('div');
+            p.innerText = `+${clickValue}`;
             p.className = 'particle';
-            p.textContent = `+${clickValue}`;
-            p.style.left = (window.innerWidth / 2) + 'px';
-            p.style.top = (window.innerHeight / 2) + 'px';
+            p.style.left = (window.innerWidth / 2) + (Math.random() * 60 - 30) + 'px';
+            p.style.top = (window.innerHeight / 2) - 40 + 'px';
             document.body.appendChild(p);
             setTimeout(() => p.remove(), 1000);
         }
 
-        /* ===================== */
-        /* SETTINGS PANEL LOGIC */
-        /* ===================== */
-        const settingsBtn = document.getElementById('settings-btn');
+
+        const settingsButton = document.getElementById('settingsButton');
         const settingsPanel = document.getElementById('settingsPanel');
         const closeButton = document.getElementById('closeButton');
 
-        settingsBtn.addEventListener('mousedown', () => {
-            settingsBtn.classList.add('pressed');
-            settingsPanel.style.transform = "translate(-50%, -50%) scale(1)";
-        });
+        let panelOpen = false;
 
-        window.addEventListener('mouseup', () => {
-            settingsBtn.classList.remove('pressed');
+        settingsButton.addEventListener('click', () => {
+            pnaelOpen = true;
+            settingsPanel.style.transform = "translate(-50%, -50%) scale(1)";
+            closeButton.stlye.display = "block";
         });
 
         closeButton.addEventListener('click', () => {
-            settingsPanel.style.transform = "translate(-50%, -50%) scale(0)";
+            panelOpen = false;
+            colseButton.style.display = "none";
+            settingsPanel.style.transform = "translate(-50%, -50%) scale(0);
         });
     </script>
 </body>
