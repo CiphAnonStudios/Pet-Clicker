@@ -154,8 +154,48 @@
         </div>
     </div>
 
+    <div style="position: fixed; top: 16px; right: 16px; display: flex; gap: 8px; z-index: 50;">
+  <button id="btn-settings" style="padding:8px 12px; border-radius:6px; background:#333; color:#fff; border:1px solid #444; cursor:pointer;">Settings</button>
+  <button id="btn-changelog" style="padding:8px 12px; border-radius:6px; background:#222; color:#fff; border:1px solid #444; cursor:pointer;">Update Log</button>
+</div>
+
+
     <div class="glass-overlay"></div>
 
+<!-- Settings Modal -->
+<div id="modal-settings" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background:rgba(0,0,0,0.6); z-index:100;">
+  <div style="background:#1f1f1f; color:#fff; padding:18px; border-radius:10px; width:320px; max-width:90%;">
+    <h3 style="margin:0 0 10px 0;">Settings</h3>
+    <label style="display:flex; justify-content:space-between; margin-bottom:8px;">
+      <span>Show Particles</span>
+      <input id="setting-particles" type="checkbox" />
+    </label>
+    <label style="display:flex; justify-content:space-between; margin-bottom:8px;">
+      <span>Sound</span>
+      <input id="setting-sound" type="checkbox" />
+    </label>
+    <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
+      <button id="settings-close" style="padding:6px 10px; border-radius:6px;">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Changelog Modal -->
+<div id="modal-changelog" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background:rgba(0,0,0,0.6); z-index:100;">
+  <div style="background:#1f1f1f; color:#fff; padding:18px; border-radius:10px; width:420px; max-width:95%;">
+    <h3 style="margin:0 0 10px 0;">Update Log</h3>
+    <div id="changelog-content" style="max-height:300px; overflow:auto; font-size:0.95rem;">
+      <ul style="padding-left:18px; margin:0;">
+        <li>v1.2 — Added gems awarded every 10 clicks.</li>
+        <li>v1.1 — Added auto-clicker & mega tap upgrades.</li>
+        <li>v1.0 — Initial release.</li>
+      </ul>
+    </div>
+    <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
+      <button id="changelog-close" style="padding:6px 10px; border-radius:6px;">Close</button>
+    </div>
+  </div>
+</div>
 
     <script>
     // --- LOAD / DEFAULTS ---
@@ -300,6 +340,52 @@
         document.body.appendChild(g);
         setTimeout(() => g.remove(), 1200);
     }
+
+        // Settings defaults & load
+const showParticles = localStorage.getItem('setting_particles') === '1';
+const soundOn = localStorage.getItem('setting_sound') === '1';
+
+const btnSettings = document.getElementById('btn-settings');
+const btnChangelog = document.getElementById('btn-changelog');
+const modalSettings = document.getElementById('modal-settings');
+const modalChangelog = document.getElementById('modal-changelog');
+const settingsClose = document.getElementById('settings-close');
+const changelogClose = document.getElementById('changelog-close');
+const settingParticlesEl = document.getElementById('setting-particles');
+const settingSoundEl = document.getElementById('setting-sound');
+
+// initialize controls
+settingParticlesEl.checked = showParticles;
+settingSoundEl.checked = soundOn;
+
+// helper to toggle modals
+function openModal(el){ el.style.display = 'flex'; }
+function closeModal(el){ el.style.display = 'none'; }
+
+btnSettings.addEventListener('click', () => openModal(modalSettings));
+settingsClose.addEventListener('click', () => closeModal(modalSettings));
+btnChangelog.addEventListener('click', () => openModal(modalChangelog));
+changelogClose.addEventListener('click', () => closeModal(modalChangelog));
+modalSettings.addEventListener('click', (e) => { if (e.target === modalSettings) closeModal(modalSettings); });
+modalChangelog.addEventListener('click', (e) => { if (e.target === modalChangelog) closeModal(modalChangelog); });
+
+// persist setting changes
+settingParticlesEl.addEventListener('change', () => {
+  localStorage.setItem('setting_particles', settingParticlesEl.checked ? '1' : '0');
+});
+// (sound handler placeholder)
+settingSoundEl.addEventListener('change', () => {
+  localStorage.setItem('setting_sound', settingSoundEl.checked ? '1' : '0');
+});
+
+// Respect settings when creating particles (modify your createParticle & showGemParticle):
+// At top of file you already have setting variables; if not, read them inside those functions:
+function particlesEnabled(){
+  return localStorage.getItem('setting_particles') === '1';
+}
+
+// Example modifications (replace calls to createParticle()/showGemParticle() with checks)
+
 
     </script>
 </body>
